@@ -1,0 +1,165 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  nameNL      String
+  nameAR      String
+  description String
+  descriptionNL String
+  descriptionAR String
+  price       Float
+  duration    Int      // Duration in minutes
+  category    String
+  isActive    Boolean  @default(true)
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  appointments Appointment[]
+  reviews      Review[]
+
+  @@map("services")
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String
+  language  String   @default("nl") // nl, en, ar
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointments Appointment[]
+
+  @@map("customers")
+}
+
+model Appointment {
+  id          String   @id @default(cuid())
+  customerId  String
+  serviceId   String
+  date        DateTime
+  time        String
+  status      String   @default("PENDING") // PENDING, CONFIRMED, COMPLETED, CANCELLED, NO_SHOW
+  notes       String?
+  totalPrice  Float
+  language    String   @default("nl")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  service  Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@map("appointments")
+}
+
+model Staff {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  phone       String
+  role        String   // e.g., "beautician", "manager", "receptionist"
+  bio         String?
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  languages   String   // JSON array of supported languages ["nl", "en", "ar"]
+  specialties String   // JSON array of specialties
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("staff")
+}
+
+model TimeSlot {
+  id        String   @id @default(cuid())
+  date      DateTime
+  time      String
+  isBooked  Boolean  @default(false)
+  staffId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([date, time])
+  @@map("time_slots")
+}
+
+model Booking {
+  id              String   @id @default(cuid())
+  customerName    String
+  customerEmail   String
+  customerPhone   String
+  serviceName     String
+  appointmentDate DateTime
+  appointmentTime String
+  message         String?
+  status          String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("bookings")
+}
+
+model Gallery {
+  id          String   @id @default(cuid())
+  title       String
+  titleNL     String
+  titleAR     String
+  description String?
+  descriptionNL String?
+  descriptionAR String?
+  imageUrl    String
+  category    String   // clinic, treatments, facilities, products, results
+  type        String   @default("IMAGE") // IMAGE, VIDEO
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("gallery")
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  rating      Int      // 1-5 stars
+  title       String
+  content     String
+  serviceId   String?
+  isApproved  Boolean  @default(false)
+  isFeature   Boolean  @default(false) // Featured on homepage
+  language    String   @default("nl")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  service Service? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+
+  @@map("reviews")
+}
+
+// SQLite doesn't support enums, so we use String fields with comments indicating valid values
+// AppointmentStatus: PENDING, CONFIRMED, COMPLETED, CANCELLED, NO_SHOW
+// GalleryType: IMAGE, VIDEO
+// ReviewRating: 1, 2, 3, 4, 5
