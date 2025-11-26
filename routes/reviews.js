@@ -9,16 +9,15 @@ router.get('/', async (req, res) => {
   try {
     const reviews = await prisma.review.findMany({
       where: { 
-        approved: true 
+        isApproved: true 
       },
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
-        customerName: true,
+        name: true,
         rating: true,
         title: true,
         content: true,
-        serviceName: true,
         createdAt: true
         // Don't include email for privacy
       }
@@ -42,18 +41,17 @@ router.get('/featured', async (req, res) => {
   try {
     const reviews = await prisma.review.findMany({
       where: { 
-        approved: true,
+        isApproved: true,
         rating: { gte: 4 } // 4+ star reviews
       },
       orderBy: { createdAt: 'desc' },
       take: 6, // Limit to 6 featured reviews
       select: {
         id: true,
-        customerName: true,
+        name: true,
         rating: true,
         title: true,
         content: true,
-        serviceName: true,
         createdAt: true
       }
     });
