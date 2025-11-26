@@ -44,49 +44,11 @@ router.post('/', async (req, res) => {
       },
     });
 
-    // Send email notification
-    const mailOptions = {
-      from: process.env.SMTP_USER,
-      to: process.env.CLINIC_EMAIL || 'info@pureauraclinic.nl',
-      subject: `New Booking: ${name} - ${service}`,
-      html: `
-        <h2>New Appointment Booking</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone}</p>
-        <p><strong>Service:</strong> ${service}</p>
-        <p><strong>Date:</strong> ${date}</p>
-        <p><strong>Time:</strong> ${time}</p>
-        <p><strong>Message:</strong> ${message}</p>
-        <br>
-        <p>Please contact the customer to confirm the appointment.</p>
-      `,
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    // Send confirmation email to customer
-    const customerMailOptions = {
-      from: process.env.SMTP_USER,
-      to: email,
-      subject: 'Booking Confirmation - Pure Aura Clinic',
-      html: `
-        <h2>Appointment Booking Received</h2>
-        <p>Dear ${name},</p>
-        <p>Thank you for booking with Pure Aura Clinic. We have received your appointment request:</p>
-        <ul>
-          <li><strong>Service:</strong> ${service}</li>
-          <li><strong>Date:</strong> ${date}</li>
-          <li><strong>Time:</strong> ${time}</li>
-        </ul>
-        <p>We will contact you within 24 hours to confirm your appointment.</p>
-        <p>If you have any questions, please call us at +31 6 84664822</p>
-        <br>
-        <p>Best regards,<br>Pure Aura Clinic Team</p>
-      `,
-    };
-
-    await transporter.sendMail(customerMailOptions);
+    // Email sending temporarily disabled due to Hostnet server issues
+    // TODO: Re-enable when Hostnet resolves their email server problems
+    console.log('New booking created:', {
+      name, email, phone, service, date, time, message
+    });
 
     res.status(201).json({
       success: true,

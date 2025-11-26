@@ -35,50 +35,11 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Send email to clinic
-    const mailOptions = {
-      from: process.env.SMTP_USER,
-      to: process.env.CLINIC_EMAIL || 'info@pureauraclinic.nl',
-      subject: subject || `Contact Form: Message from ${name}`,
-      html: `
-        <h2>New Contact Form Message</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ''}
-        <p><strong>Subject:</strong> ${subject || 'General Inquiry'}</p>
-        <br>
-        <p><strong>Message:</strong></p>
-        <p>${message.replace(/\n/g, '<br>')}</p>
-        <br>
-        <p><em>Sent via Pure Aura Clinic website contact form</em></p>
-      `,
-      replyTo: email // Allow direct reply to customer
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    // Send auto-reply to customer
-    const autoReplyOptions = {
-      from: process.env.SMTP_USER,
-      to: email,
-      subject: 'Thank you for contacting Pure Aura Clinic',
-      html: `
-        <h2>Thank You for Your Message</h2>
-        <p>Dear ${name},</p>
-        <p>Thank you for contacting Pure Aura Clinic. We have received your message and will respond within 24 hours.</p>
-        <br>
-        <p><strong>Your message:</strong></p>
-        <p>${message.replace(/\n/g, '<br>')}</p>
-        <br>
-        <p>If you need immediate assistance, please call us at:</p>
-        <p>📞 +31 6 84664822</p>
-        <p>📍 Schoutstraat 29, 1315EV Almere Stad</p>
-        <br>
-        <p>Best regards,<br>Pure Aura Clinic Team</p>
-      `,
-    };
-
-    await transporter.sendMail(autoReplyOptions);
+    // Email sending temporarily disabled due to Hostnet server issues
+    // TODO: Re-enable when Hostnet resolves their email server problems
+    console.log('New contact message received:', {
+      name, email, phone, subject, message
+    });
 
     res.json({
       success: true,
