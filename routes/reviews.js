@@ -91,13 +91,12 @@ router.post('/', async (req, res) => {
     // Create review (pending approval)
     const review = await prisma.review.create({
       data: {
-        customerName: name,
-        customerEmail: email,
+        name: name,
+        email: email,
         rating: parseInt(rating),
         title: title,
         content: content,
-        serviceName: service || '',
-        approved: false // Requires manual approval
+        isApproved: false // Requires manual approval
       },
     });
 
@@ -106,11 +105,10 @@ router.post('/', async (req, res) => {
       message: 'Review submitted successfully. It will be published after approval.',
       review: {
         id: review.id,
-        customerName: review.customerName,
+        name: review.name,
         rating: review.rating,
         title: review.title,
-        content: review.content,
-        serviceName: review.serviceName
+        content: review.content
       }
     });
 
