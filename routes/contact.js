@@ -4,9 +4,10 @@ const router = express.Router();
 
 // Email transporter setup
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
+  host: process.env.SMTP_HOST || 'mailout.hostnet.nl',
   port: process.env.SMTP_PORT || 587,
   secure: false,
+  requireTLS: true,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -37,7 +38,7 @@ router.post('/', async (req, res) => {
     // Send email to clinic
     const mailOptions = {
       from: process.env.SMTP_USER,
-      to: process.env.CLINIC_EMAIL || 'info@pureaura.clinic',
+      to: process.env.CLINIC_EMAIL || 'info@pureauraclinic.nl',
       subject: subject || `Contact Form: Message from ${name}`,
       html: `
         <h2>New Contact Form Message</h2>
@@ -115,7 +116,7 @@ router.post('/newsletter', async (req, res) => {
     // Send notification to clinic
     const mailOptions = {
       from: process.env.SMTP_USER,
-      to: process.env.CLINIC_EMAIL || 'info@pureaura.clinic',
+      to: process.env.CLINIC_EMAIL || 'info@pureauraclinic.nl',
       subject: 'New Newsletter Subscription',
       html: `
         <h2>New Newsletter Subscription</h2>
